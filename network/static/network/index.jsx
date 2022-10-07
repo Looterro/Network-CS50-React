@@ -31,7 +31,7 @@ function Post(props) {
 
     //Make sure data is fetched
     if (!isLoaded) {
-        
+
         return <div>Loading...</div>;
 
     } else {
@@ -42,9 +42,15 @@ function Post(props) {
         return (
             <div>
                 {items.posts.map((post, i) =>
-                    <div key={i}>
-                        <h1>{post.user}</h1>
-                        <h2>{post.body}</h2>
+                    <div className="card" key={i}>
+                        <div className="card-title m-2">
+                            <strong>{post.user}</strong>
+                            <div className="card-subtitle m-2 text-muted">
+                                {post.body}
+                                <br />
+                                <small>{post.timestamp}</small>
+                            </div>
+                        </div>
                     </div>    
                 )}
             </div>
