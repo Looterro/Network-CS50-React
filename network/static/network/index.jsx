@@ -11,7 +11,16 @@ function Post(props) {
     //Make sure data is fetched
     if (!props.state.isLoaded) {
 
-        return <div>Loading...</div>;
+        return (
+        
+        <div>
+            Loading...
+            <button onClick={testRun}>check!</button>
+        </div>
+        
+        
+        );
+        
 
     } else {
 
@@ -33,11 +42,65 @@ function Post(props) {
                         </div>
                     </div>    
                 )}
+                <Paginator postProps={props} upperPageLimit={props.state.upperPageLimit} />
             </div>
         );
     }
 }
 
+function Paginator(props) {
+
+    function buttons () {
+
+        console.log("check!")
+        let listButtons = []
+        for (let i=1; i <= props.upperPageLimit; i++) {
+            listButtons.push("i")
+        }
+        console.log(listButtons)
+
+        return (
+            <span>
+                {listButtons.map((button, i) =>
+                    <li><button /*onClick={paginatorNumber}*/ className={props.postProps.pageNumber == i ? "page-link active" : "page-link" }>{i}</button></li>
+                )}
+            </span>
+        )
+    }
+
+    function paginatorNext() {
+        props.postProps.changePageNumber(props.postProps.state.pageNumber + 1)
+    }
+
+    function paginatorPrevious() {
+        props.postProps.changePageNumber(props.postProps.state.pageNumber - 1)
+    }
+
+    // function paginatorNumber(number) {
+    //     props.postProps.changePageNumber(number)
+    // }
+
+    //Check if there is only one page
+    if (props.upperPageLimit !==1) {
+        return (
+            <div>
+                <nav>
+                    <ul className="pagination">
+                        <li className="page-item"><button onClick={paginatorPrevious} className="page-link">&laquo; previous</button></li>
+                        {buttons()}
+                        <li className="page-item"><button onClick={paginatorNext} className="page-link">next &raquo;</button></li>
+                    </ul>
+                </nav>
+            </div>
+        )
+    } else {
+
+        return (
+            ""
+        )
+    }
+
+}
 
 function App() {
 
@@ -46,32 +109,48 @@ function App() {
         postsType: 'all_posts',
         pageNumber: 1,
         isLoaded: false,
-        posts: []
+        posts: [],
+        upperPageLimit: 1
     })
 
-    //Load the posts
-    React.useEffect(() => {
-        fetch(`/posts/${state.postsType}?page=${state.pageNumber}`)
-        .then(response => response.json())
-        .then(data => {
+    function loadPosts () {
 
-            let posts = data.posts
-            console.log(posts)
+        //Load the posts only if they are not loaded already to prevent the loop
+        if (state.isLoaded !== true) {
 
-            setState({
-                ...state,
-                isLoaded: true,
-                posts: data.posts,
+            fetch(`/posts/${state.postsType}?page=${state.pageNumber}`)
+            .then(response => response.json())
+            .then(data => {
+
+                let posts = data.posts
+                console.log(posts)
+
+                setState({
+                    ...state,
+                    isLoaded: true,
+                    posts: data.posts,
+                    upperPageLimit: data.upper_page_limit
+                })
             })
-        })
-    }, [])
 
-    function changePageNumber () {
+        }
+
+    }
+
+    function changePageNumber (value) {
         setState({
             ...state,
-            pageNumber: 2,
+            pageNumber: value,
+            isLoaded: false,
         })
+        console.log(state.pageNumber)
+        loadPosts();
+
     }
+
+    //load posts once when starting the app
+    loadPosts();
+    console.log(state.upperPageLimit)
 
     return (
 

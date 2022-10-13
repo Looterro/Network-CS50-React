@@ -455,7 +455,7 @@ function load_posts(posts_type, page_number) {
                     <ul class="pagination">
                             <li id="previous_paginator" class="page-item"><a class="page-link">&laquo; previous</a></li>
                             ${pagination_btn_list}
-                            <li id="next_paginator" class="page-item"><a class="page-link"">next &raquo;</a></li>
+                            <li id="next_paginator" class="page-item"><a class="page-link">next &raquo;</a></li>
                     </ul>
                 </nav>
             </div>
