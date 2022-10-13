@@ -1,47 +1,27 @@
-//TODO
 function Post(props) {
 
-    // const [postsView, setPostsView] = React.useState ({
-    //     id: this.props.id,
-    //     // liked: false etc.
-    // })
+    console.log(props.state.posts)
 
-    const posts_type = 'all_posts'
-    const page_number = '1'
-
-    //Setting items as an array to load posts once
-    const [isLoaded, setIsLoaded] = React.useState(false);
-    const [items, setItems] = React.useState([]);
-
-
-    React.useEffect(() => {
-        fetch(`/posts/${posts_type}?page=${page_number}`)
-        .then(response => response.json())
-        .then( data => {
-            let posts = data.posts
-            console.log(posts)
-            setItems(data)
-            setIsLoaded(true)
-
-        })
-    }, [])
-
-    console.log(items)
-    console.log(items.posts)
+    function testRun () {
+        console.log(props.state.pageNumber)
+        props.changePageNumber()
+        console.log(props.state.pageNumber)
+    }
 
     //Make sure data is fetched
-    if (!isLoaded) {
+    if (!props.state.isLoaded) {
 
         return <div>Loading...</div>;
 
     } else {
 
-        console.log(items)
-        console.log(items.posts)
-
+        console.log(props.state.posts)
+        
         return (
-            <div>
-                {items.posts.map((post, i) =>
+            <div id="posts-section">
+                <button onClick={testRun}>check!</button>
+                <div><h2>{props.state.postsType == "all_posts" ? "All Posts" : `${props.state.postsType}`}</h2></div>
+                {props.state.posts.map((post, i) =>
                     <div className="card" key={i}>
                         <div className="card-title m-2">
                             <strong>{post.user}</strong>
@@ -61,10 +41,49 @@ function Post(props) {
 
 function App() {
 
+    //Adapting title based on the type of posts
+    const [state, setState] = React.useState({
+        postsType: 'all_posts',
+        pageNumber: 1,
+        isLoaded: false,
+        posts: []
+    })
+
+    //Load the posts
+    React.useEffect(() => {
+        fetch(`/posts/${state.postsType}?page=${state.pageNumber}`)
+        .then(response => response.json())
+        .then(data => {
+
+            let posts = data.posts
+            console.log(posts)
+
+            setState({
+                ...state,
+                isLoaded: true,
+                posts: data.posts,
+            })
+        })
+    }, [])
+
+    function changePageNumber () {
+        setState({
+            ...state,
+            pageNumber: 2,
+        })
+    }
+
     return (
+
         // load an app component
         <div>
-            <div><Post /></div>
+
+            <div>
+                <Post 
+                state={state}
+                changePageNumber={changePageNumber}
+                />
+            </div>
 
         </div>
     );

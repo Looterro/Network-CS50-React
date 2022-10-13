@@ -1,0 +1,92 @@
+
+#posts-section > div {
+    border: none #dadde0; 
+    box-shadow: 2px 2px 2px 2px #e9ecef; 
+    border-radius: 6px;
+    padding: 10px;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-bottom: 20px;
+}
+
+/* .comments_toggle {
+    background-color: none;
+}
+
+.comment_div {
+    box-shadow: 2px 2px 2px 2px #e9ecef; 
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.comments_div {
+    max-height: 40vh;
+    overflow-y: scroll;
+}
+
+.comment {
+    border-top: solid 1px;
+    border-color: #dadde0;
+    padding: 5px;
+}
+
+#title {
+    text-align: center;
+}
+
+#post-form {
+    border: none #dadde0; 
+    box-shadow: 2px 2px 2px 2px #e9ecef; 
+    border-radius: 6px;
+    padding: 10px;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-bottom: 20px;
+}
+
+.edit {
+margin-top: 2px;
+}
+.userview-link {
+    border: none;
+    background-color: #ffffff;
+    border-radius: 6px;
+}
+
+.userview-link-comments {
+    border: none;
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 0px;
+}
+
+.follow {
+    margin: 5px;
+}
+
+.userinformation {
+    margin: 5px;
+}
+
+#userview {
+    text-align: center;
+}
+
+#pagination {
+    border: none #dadde0; 
+    box-shadow: 2px 2px 2px 2px #e9ecef; 
+    border-radius: 6px;
+    padding: 10px;
+    margin-left: 25%;
+    margin-right: 25%;
+    color: #0077ffdf;
+}
+
+
+#post-form {
+    border: none;
+}
+
+#title {
+    margin: 12px;
+} */
