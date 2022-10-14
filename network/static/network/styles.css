@@ -9,6 +9,11 @@
     margin-bottom: 20px;
 }
 
+.test > li {
+   display: inline-block;
+   margin: 1px; 
+}
+
 /* .comments_toggle {
     background-color: none;
 }

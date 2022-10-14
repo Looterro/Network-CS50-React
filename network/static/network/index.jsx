@@ -2,22 +2,12 @@ function Post(props) {
 
     console.log(props.state.posts)
 
-    function testRun () {
-        console.log(props.state.pageNumber)
-        props.changePageNumber()
-        console.log(props.state.pageNumber)
-    }
-
-    //Make sure data is fetched
     if (!props.state.isLoaded) {
 
         return (
         
         <div>
-            Loading...
-            <button onClick={testRun}>check!</button>
         </div>
-        
         
         );
         
@@ -28,7 +18,6 @@ function Post(props) {
         
         return (
             <div id="posts-section">
-                <button onClick={testRun}>check!</button>
                 <div><h2>{props.state.postsType == "all_posts" ? "All Posts" : `${props.state.postsType}`}</h2></div>
                 {props.state.posts.map((post, i) =>
                     <div className="card" key={i}>
@@ -42,7 +31,7 @@ function Post(props) {
                         </div>
                     </div>    
                 )}
-                <Paginator postProps={props} upperPageLimit={props.state.upperPageLimit} />
+                <Paginator postProps={props} />
             </div>
         );
     }
@@ -50,24 +39,26 @@ function Post(props) {
 
 function Paginator(props) {
 
+    //Create an array that keeps track of how many pages there are in a certain view
+    let listButtons = []
+    buttons()
+
     function buttons () {
 
-        console.log("check!")
-        let listButtons = []
-        for (let i=1; i <= props.upperPageLimit; i++) {
-            listButtons.push("i")
+        for (let i=1; i <= props.postProps.state.upperPageLimit; i++) {
+            listButtons.push({i})
         }
         console.log(listButtons)
+        console.log(props.postProps.state.pageNumber)
 
-        return (
-            <span>
-                {listButtons.map((button, i) =>
-                    <li><button /*onClick={paginatorNumber}*/ className={props.postProps.pageNumber == i ? "page-link active" : "page-link" }>{i}</button></li>
-                )}
-            </span>
-        )
     }
 
+    //Based on the length of the array add the same amount of buttons
+    let buttonsTemplate = listButtons.map((button, i) =>
+        <li className={props.postProps.state.pageNumber == i+1 ? "page-item active" : "page-item"}><button data-position={i+1} className="page-link" onClick={paginatorNumber}>{i+1}</button></li>
+    )
+
+    //Navigate between pages
     function paginatorNext() {
         props.postProps.changePageNumber(props.postProps.state.pageNumber + 1)
     }
@@ -76,19 +67,22 @@ function Paginator(props) {
         props.postProps.changePageNumber(props.postProps.state.pageNumber - 1)
     }
 
-    // function paginatorNumber(number) {
-    //     props.postProps.changePageNumber(number)
-    // }
+    function paginatorNumber(event) {
+        console.log('click!')
+        //use dataset as the value for a pageNumber
+        console.log(event.target.dataset.position)
+        props.postProps.changePageNumber(event.target.dataset.position)
+    }
 
     //Check if there is only one page
-    if (props.upperPageLimit !==1) {
+    if (props.postProps.state.upperPageLimit !==1) {
         return (
             <div>
                 <nav>
                     <ul className="pagination">
-                        <li className="page-item"><button onClick={paginatorPrevious} className="page-link">&laquo; previous</button></li>
-                        {buttons()}
-                        <li className="page-item"><button onClick={paginatorNext} className="page-link">next &raquo;</button></li>
+                        {props.postProps.state.pageNumber > 1 ? <li className="page-item"><button onClick={paginatorPrevious} className="page-link">&laquo; previous</button></li>  : "" }
+                        {buttonsTemplate}
+                        {props.postProps.state.pageNumber < props.postProps.state.upperPageLimit ? <li className="page-item"><button onClick={paginatorNext} className="page-link">next &raquo;</button></li> : "" }
                     </ul>
                 </nav>
             </div>
