@@ -2,6 +2,11 @@ function Post(props) {
 
     console.log(props.state.posts)
 
+    function postUserview (event) {
+        console.log(event.target.innerHTML)
+        props.postUserview(event.target.innerHTML)
+    }
+
     if (!props.state.isLoaded) {
 
         return (
@@ -22,7 +27,7 @@ function Post(props) {
                 {props.state.posts.map((post, i) =>
                     <div className="card" key={i}>
                         <div className="card-title m-2">
-                            <strong>{post.user}</strong>
+                            <button className="btn btn-link" onClick={postUserview}>{post.user}</button>
                             <div className="card-subtitle m-2 text-muted">
                                 {post.body}
                                 <br />
@@ -142,6 +147,38 @@ function App() {
 
     }
 
+    // Change the view to following or a userview by clicking links in the navbar
+    const following = document.getElementById('following_nav');
+    following.onclick = () => {
+        console.log("click")
+        setState({
+            ...state,
+            postsType: "following",
+            isLoaded: false,
+        })
+        loadPosts();
+    }
+
+    const userview = document.getElementById('username');
+    userview.onclick = () => {
+        console.log("click")
+        setState({
+            ...state,
+            postsType: `${userview.innerHTML}`,
+            isLoaded: false,
+        })
+        loadPosts();
+    }
+
+    function postUserview (username) {
+        setState({
+            ...state,
+            postsType: `${username}`,
+            isLoaded: false,
+        })
+        loadPosts();
+    }
+
     //load posts once when starting the app
     loadPosts();
     console.log(state.upperPageLimit)
@@ -155,6 +192,7 @@ function App() {
                 <Post 
                 state={state}
                 changePageNumber={changePageNumber}
+                postUserview={postUserview}
                 />
             </div>
 
