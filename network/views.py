@@ -85,7 +85,7 @@ def posting_compose(request):
     )
     post.save()
     
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponse(status=204)
 
 @csrf_exempt
 @login_required

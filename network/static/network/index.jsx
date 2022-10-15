@@ -126,6 +126,7 @@ function Post(props) {
         
         return (
             <div id="posts-section">
+                {props.state.postsType == 'all_posts' && props.state.pageNumber == 1 ? <PostForm postProps={props} /> : ""}
                 {props.state.posts.map((post, i) =>
                     <div className="card" key={i}>
                         <div className="card-title m-2">
@@ -142,6 +143,53 @@ function Post(props) {
             </div>
         );
     }
+}
+
+function PostForm(props) {
+
+    const [state, setState] = React.useState({
+        text: "",
+    })
+
+    //Update the text
+    function updateText(event) {
+        setState({
+            text: event.target.value
+        })
+    }
+
+    function submitPost (event) {
+
+        //Prevent reloading the page
+        event.preventDefault()
+        fetch('/posting_compose', {
+            method: 'POST',
+            body: JSON.stringify({
+                body: state.text,
+            }),
+        })
+        .then(response => {
+
+            //Reload the posts
+            props.postProps.setState({
+                ...props.postProps.state,
+                isLoaded: false,
+            })
+
+            props.postProps.loadPosts()
+        })
+
+    }
+
+    return (
+        <div id="post-form">
+            <h5 className="m-2">New Post</h5>
+            <form id="compose-form">
+                <textarea id="post-body" className="form-control m-1" placeholder="Write your post here" onChange={updateText}></textarea>
+                <input type="submit" onClick={submitPost} className="btn btn-primary m-1" value="Post" />
+            </form>
+        </div>
+    )
 }
 
 function Paginator(props) {
@@ -302,8 +350,10 @@ function App() {
                 />
                 <Post 
                     state={state}
+                    setState={setState}
                     changePageNumber={changePageNumber}
                     postUserview={postUserview}
+                    loadPosts={loadPosts}
                 />
             </div>
 
