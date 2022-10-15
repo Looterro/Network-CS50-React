@@ -123,12 +123,13 @@ function Post(props) {
     } else {
 
         console.log(props.state.posts)
+        console.log(props.state.posts.length)
         
         return (
             <div id="posts-section">
                 {props.state.postsType == 'all_posts' && props.state.pageNumber == 1 ? <PostForm postProps={props} /> : ""}
                 {props.state.posts.map((post, i) =>
-                    <div className="card" key={i}>
+                    <div className={i == 0 && props.state.animate == true ? "card animateTest" : "card"} key={i}>
                         <div className="card-title m-2">
                             <button className="btn btn-link" onClick={postUserview}>{post.user}</button>
                             <div className="card-subtitle m-2 text-muted">
@@ -174,6 +175,8 @@ function PostForm(props) {
             props.postProps.setState({
                 ...props.postProps.state,
                 isLoaded: false,
+                //animate addition of the new post
+                animate: true,
             })
 
             props.postProps.loadPosts()
@@ -259,7 +262,8 @@ function App() {
         pageNumber: 1,
         isLoaded: false,
         posts: [],
-        upperPageLimit: 1
+        upperPageLimit: 1,
+        animate: false,
     })
 
     function loadPosts () {
