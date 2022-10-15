@@ -211,10 +211,16 @@ def follow(request):
 def load_users(request, user):
 
     if request.method == "GET":
-        users = User.objects.filter(username = user)
-        return JsonResponse({
+
+        if user == "all":
+            users = User.objects.all()
+            return JsonResponse({
             "user": [user.serialize() for user in users]
             }, safe=False)
+
+        else:
+            user = User.objects.get(username = user)
+            return JsonResponse(user.serialize())
 
 @csrf_exempt
 @login_required

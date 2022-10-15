@@ -8,13 +8,42 @@ function Title(props) {
 }
 
 function UserProfile(props) {
-    console.log('click!');
+
+    const [state, setState] = React.useState({
+        followed: 0,
+        following: 0,
+    })
+    console.log(props.state.postsType);
+
+    // Only run this component if browsing a user profile
+    if (props.state.postsType != 'all_posts' && props.state.postsType != 'following') {
+        console.log(state);
+
+        //Only run the function if the user posts in App component are loaded. When posts update, so does the followed/following count
+        if (props.state.isLoaded === false) {
+
+            fetch('/load_users/' + props.state.postsType)
+            .then(response => response.json())
+            .then(user => {
+
+                console.log(user)
+                console.log(user.followers)
+
+                setState({
+                    ...state,
+                    followed: user.followers.length,
+                    following: user.following.length,
+                })
+            })
+        }
+
     console.log(props.state.postsType != 'all_posts' && props.state.postsType != 'following');
 
-    if (props.state.postsType != 'all_posts' && props.state.postsType != 'following') {
+    //Display the users page if the type of posts are not following and all_posts
+    
         return (
             <div className="userview">
-                <div> Followers: 0 | Following: 0 </div>
+                <div> Followers: {state.followed} | Following: {state.following} </div>
                 <button className="btn btn-sm btn-secondary"> Follow </button>
             </div>
         )
