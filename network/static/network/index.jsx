@@ -103,6 +103,10 @@ function UserProfile(props) {
 
 function Post(props) {
 
+    const [state, setState] = React.useState({
+        editing: false,
+    })
+
     console.log(props.state.posts)
 
     function postUserview (event) {
@@ -124,18 +128,23 @@ function Post(props) {
 
         console.log(props.state.posts)
         console.log(props.state.posts.length)
+        console.log(props.username)
         
         return (
             <div id="posts-section">
                 {props.state.postsType == 'all_posts' && props.state.pageNumber == 1 ? <PostForm postProps={props} /> : ""}
                 {props.state.posts.map((post, i) =>
-                    <div className={i == 0 && props.state.animate == true ? "card animateTest" : "card"} key={i}>
+                    <div className={i == 0 && props.state.animate == true ? "card animate" : "card"} key={i}>
                         <div className="card-title m-2">
                             <button className="btn btn-link" onClick={postUserview}>{post.user}</button>
                             <div className="card-subtitle m-2 text-muted">
                                 {post.body}
                                 <br />
                                 <small>{post.timestamp}</small>
+                                {post.user == props.username.innerHTML ? <button className="btn sm btn-link edit">Edit</button> : ""}
+                                <br />
+                                <button className="btn like">&#9825;</button>
+                                <button className="btn btn-link commentBtn">Comments</button>
                             </div>
                         </div>
                     </div>    
@@ -355,6 +364,7 @@ function App() {
                 <Post 
                     state={state}
                     setState={setState}
+                    username={userview}
                     changePageNumber={changePageNumber}
                     postUserview={postUserview}
                     loadPosts={loadPosts}
