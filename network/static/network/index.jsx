@@ -1,3 +1,31 @@
+function Title(props) {
+
+    return (
+        <div className="title">
+            <h2>{props.state.postsType == "all_posts" ? "All Posts" : `${props.state.postsType}`}</h2>
+        </div>
+    )
+}
+
+function UserProfile(props) {
+    console.log('click!');
+    console.log(props.state.postsType != 'all_posts' && props.state.postsType != 'following');
+
+    if (props.state.postsType != 'all_posts' && props.state.postsType != 'following') {
+        return (
+            <div className="userview">
+                <div> Followers: 0 | Following: 0 </div>
+                <button className="btn btn-sm btn-secondary"> Follow </button>
+            </div>
+        )
+    }
+
+    return (
+        ""
+    )
+
+}
+
 function Post(props) {
 
     console.log(props.state.posts)
@@ -23,7 +51,6 @@ function Post(props) {
         
         return (
             <div id="posts-section">
-                <div><h2>{props.state.postsType == "all_posts" ? "All Posts" : `${props.state.postsType}`}</h2></div>
                 {props.state.posts.map((post, i) =>
                     <div className="card" key={i}>
                         <div className="card-title m-2">
@@ -189,10 +216,16 @@ function App() {
         <div>
 
             <div>
+                <Title 
+                    state={state}
+                />
+                <UserProfile
+                    state={state} 
+                />
                 <Post 
-                state={state}
-                changePageNumber={changePageNumber}
-                postUserview={postUserview}
+                    state={state}
+                    changePageNumber={changePageNumber}
+                    postUserview={postUserview}
                 />
             </div>
 
