@@ -114,6 +114,10 @@ function Post(props) {
         props.postUserview(event.target.innerHTML)
     }
 
+    function editPost () {
+        console.log("click!")
+    }
+
     if (!props.state.isLoaded) {
 
         return (
@@ -141,7 +145,7 @@ function Post(props) {
                                 {post.body}
                                 <br />
                                 <small>{post.timestamp}</small>
-                                {post.user == props.username.innerHTML ? <button className="btn sm btn-link edit">Edit</button> : ""}
+                                {post.user == props.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
                                 <br />
                                 <button className="btn like">&#9825;</button>
                                 <button className="btn btn-link commentBtn">Comments</button>

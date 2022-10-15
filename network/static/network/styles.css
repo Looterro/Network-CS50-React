@@ -13,10 +13,8 @@
 }
 
 .btn-link, .btn-link:hover {
-    margin: 0;
-    padding: 0;
     color: #000000;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .like {
