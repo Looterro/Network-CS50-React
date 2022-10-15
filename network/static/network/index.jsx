@@ -8,16 +8,39 @@ function Title(props) {
 }
 
 function UserProfile(props) {
-
+    
     const [state, setState] = React.useState({
-        followed: 0,
-        following: 0,
+        followedCount: 0,
+        followingCount: 0,
+        followed: false,
     })
-    console.log(props.state.postsType);
+
+    function followUser() {
+        console.log(state)
+
+        fetch('follow', {
+            method: 'PUT',
+            body: JSON.stringify({
+                username: props.state.postsType
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            const followedstate = data['followed']
+            const followedUpdatedCount = data['followers']
+
+            setState({
+                ...state,
+                followed: followedstate,
+                followedCount: followedUpdatedCount,
+            })
+        })
+    }
 
     // Only run this component if browsing a user profile
     if (props.state.postsType != 'all_posts' && props.state.postsType != 'following') {
-        console.log(state);
+        
 
         //Only run the function if the user posts in App component are loaded. When posts update, so does the followed/following count
         if (props.state.isLoaded === false) {
@@ -31,20 +54,43 @@ function UserProfile(props) {
 
                 setState({
                     ...state,
-                    followed: user.followers.length,
-                    following: user.following.length,
+                    followedCount: user.followers.length,
+                    followingCount: user.following.length,
                 })
+
+                //Fetch information whether a given user is followed by request user or not
+
+                fetch('/follow_status', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        username: props.state.postsType
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    let followed = data['followed']
+                    console.log(followed)
+                    setState({
+                        ...state,
+                        followed: followed,
+                    })
+                })
+
             })
+
+            
+
         }
 
-    console.log(props.state.postsType != 'all_posts' && props.state.postsType != 'following');
+        console.log(props.state.postsType != 'all_posts' && props.state.postsType != 'following');
+        console.log(props.username.innerHTML)
+        console.log(state.followed)
 
-    //Display the users page if the type of posts are not following and all_posts
-    
         return (
             <div className="userview">
-                <div> Followers: {state.followed} | Following: {state.following} </div>
-                <button className="btn btn-sm btn-secondary"> Follow </button>
+                <div> Followers: {state.followedCount} | Following: {state.followingCount} </div>
+                {props.username.innerHTML == props.state.postsType ? "" : <button onClick={followUser} className="btn btn-sm btn-secondary"> {state.followed ? "Unfollow" : "Follow"} </button>}
             </div>
         )
     }
@@ -215,7 +261,9 @@ function App() {
         loadPosts();
     }
 
+    //get the username of the client
     const userview = document.getElementById('username');
+
     userview.onclick = () => {
         console.log("click")
         setState({
@@ -249,7 +297,8 @@ function App() {
                     state={state}
                 />
                 <UserProfile
-                    state={state} 
+                    state={state}
+                    username={userview} 
                 />
                 <Post 
                     state={state}
