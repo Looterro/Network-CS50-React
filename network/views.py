@@ -234,6 +234,7 @@ def comments(request, post_id):
         return JsonResponse({
             "comments": [comment.serialize() for comment in comments],
         })
+        
 @csrf_exempt
 @login_required
 def comments_compose(request, post_id):

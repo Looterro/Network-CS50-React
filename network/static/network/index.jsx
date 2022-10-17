@@ -142,7 +142,6 @@ function Posts(props) {
 function Post(props) {
 
     const post = props.post
-    const i = props.i
 
     const [state, setState] = React.useState({
         editing: false,
@@ -150,6 +149,7 @@ function Post(props) {
         edited: post.edited,
         liked: false,
         likesCount: post.likes.length,
+        commentsSection: false,
     })
 
     //Functions for editing a post
@@ -245,6 +245,15 @@ function Post(props) {
 
     }
 
+    function toggleComments() {
+
+        setState({
+            ...state,
+            commentsSection: !state.commentsSection,
+        })
+
+    }
+
     if (state.editing) {
         return (
             <div className="card-title m-2">
@@ -267,11 +276,100 @@ function Post(props) {
                         {post.user == props.postsProps.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
                         <br />
                         <button onClick={likePost} className={state.liked ? "liked" : "unliked"}>{state.liked ? <div>&#9829;</div> : <div>&#9825;</div>}</button> {state.likesCount}
-                        <button className="btn btn-link commentBtn">Comments</button>
+                        <button onClick={toggleComments} className="btn btn-link commentBtn">Comments</button> {state.commentsCount}
                     </div>
+                    {state.commentsSection ? <Comments postProps={props} /> : ""}
                 </div>
         )
     }
+}
+
+function Comments(props) {
+
+    const post = props.postProps.post
+
+    //setstate for all comments in an array
+    const [state, setState] = React.useState({
+        comments: [],
+        text: "",
+        isLoaded: false,
+    })
+
+    //fetch all comments
+    function loadComments() {
+
+            fetch('/comments/' + post.id)
+            .then(response => response.json())
+            .then(data => {
+
+                const comments = data['comments']
+
+                setState({
+                    ...state,
+                    comments: comments,
+                    isLoaded: true,
+                })
+            })
+
+    }
+
+    //Load the comments
+    if (state.isLoaded === false) {
+        loadComments()
+    }
+
+    function updateText(event) {
+        setState({
+            ...state,
+            text: event.target.value
+        })
+    }
+
+    //function for posting a comment with a fetch
+    function submitComment (event) {
+        event.preventDefault()
+        fetch('/comments_compose/' + event.target.dataset.id, {
+            method: 'POST',
+            body: JSON.stringify({
+                body: state.text,
+            }),
+        })
+        .then(response => {
+            setState({
+                ...state,
+                isLoaded: false,
+            })
+            loadComments()
+        })
+        return false
+    }
+
+    return (
+        <div>
+            <hr />
+                <div className="comment_div">
+                    <div className="comments_div">
+                        {state.comments.map((comment, i) =>
+                            <div className="comment">
+                                <button className="btn btn-link userview-link-comments" onClick={props.postProps.postUserview}>{comment.user}</button>
+                                <div className="text-muted">
+                                    <small>{comment.body}</small>
+                                    <br />
+                                    <small>{comment.timestamp}</small>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <hr />
+                    <div>
+                        <form>
+                            <textarea onChange={updateText} class="form-control m-1" placeholder="Write your comment here"></textarea>
+                            <input data-id={post.id} type="submit" onClick={submitComment} class="btn btn-primary btn-sm m-1" value="Comment" />
+                        </form>
+                    </div>
+                </div>
+        </div>
+    )
 }
 
 function PostForm(props) {
