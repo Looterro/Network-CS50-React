@@ -103,8 +103,6 @@ function UserProfile(props) {
 
 function Posts(props) {
 
-    console.log(props.state.posts)
-
     function postUserview (event) {
         console.log(event.target.innerHTML)
         props.postUserview(event.target.innerHTML)
@@ -121,9 +119,6 @@ function Posts(props) {
         
 
     } else {
-
-        console.log(props.state.posts)
-        console.log(props.state.posts.length)
         
         return (
             <div id="posts-section">
@@ -153,12 +148,22 @@ function Post(props) {
         editing: false,
         text: props.post.body,
         edited: post.edited,
+        liked: false,
+        likesCount: post.likes.length,
     })
 
+    //Functions for editing a post
     function editPost () {
         setState({
             ...state,
             editing: true,
+        })
+    }
+
+    function discardChanges() {
+        setState({
+            ...state,
+            editing: false,
         })
     }
 
@@ -193,29 +198,77 @@ function Post(props) {
         return false
     }
 
+    //Check for request user likes 
+    React.useEffect(() => {
+
+        fetch('/like_status', {
+            method: 'PUT',
+            body: JSON.stringify({
+                id: post.id
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            const liked = data['liked']
+
+            setState({
+                ...state,
+                liked: liked,
+            })
+        })
+    }, [])
+
+
+    //Functions for liking a post
+    function likePost() {
+
+        
+        fetch('like', {
+            method: 'PUT',
+            body: JSON.stringify({
+                id: post.id
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            const likesCount = data['likes']
+            const liked = data['liked']
+
+            setState({
+                ...state,
+                likesCount: likesCount,
+                liked: liked,
+            })
+        })
+
+    }
+
     if (state.editing) {
         return (
             <div className="card-title m-2">
-                <button className="btn btn-link" onClick={props.postUserview}>{post.user}</button>
+                <button className="btn btn-link user" onClick={props.postUserview}>{post.user}</button>
                 <form>
-                    <textarea class="form-control m-1" onChange={updateText}>{post.body}</textarea>
-                    <input type="submit" class="btn btn-primary m-1" onClick={updatePost} value="Save Changes" />
+                    <textarea className="form-control m-1" onChange={updateText}>{post.body}</textarea>
+                    <input type="submit" className="btn btn-sm btn-primary m-1" onClick={updatePost} value="Save Changes" />
+                    <button onClick={discardChanges} className="btn btn-sm btn-danger m-1">Discard Changes</button>
                 </form>
             </div>
         )
     } else {
         return (
                 <div className="card-title m-2">
-                                <button className="btn btn-link" onClick={props.postUserview}>{post.user}</button>
-                                <div className="card-subtitle m-2 text-muted">
-                                    {post.body}
-                                    <br />
-                                    <small>{post.timestamp} {state.edited ? "[Edited]" : ""}</small>
-                                    {post.user == props.postsProps.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
-                                    <br />
-                                    <button className="btn like">&#9825;</button>
-                                    <button className="btn btn-link commentBtn">Comments</button>
-                                </div>
+                    <button className="btn btn-link user" onClick={props.postUserview}>{post.user}</button>
+                    <div className="card-subtitle m-2 text-muted">
+                        {post.body}
+                        <br />
+                        <small>{post.timestamp} {state.edited ? "[Edited]" : ""}</small>
+                        {post.user == props.postsProps.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
+                        <br />
+                        <button onClick={likePost} className={state.liked ? "liked" : "unliked"}>{state.liked ? <div>&#9829;</div> : <div>&#9825;</div>}</button> {state.likesCount}
+                        <button className="btn btn-link commentBtn">Comments</button>
+                    </div>
                 </div>
         )
     }

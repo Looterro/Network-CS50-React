@@ -17,9 +17,26 @@
     font-weight: normal;
 }
 
-.like {
+.user, .user:hover {
+    margin: 0;
+    padding: 0 0 0 5px;
+    font-weight: bold;
+}
+
+.unliked, .liked {
     margin: 0;
     padding: 0;
+    border: none;
+    background-color: #ffffff;
+}
+
+button:focus {
+    border: none;
+    outline: none;
+}
+
+.liked {
+    color: red;
 }
 
 .commentBtn, .commentBtn:hover {
