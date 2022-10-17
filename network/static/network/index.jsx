@@ -101,21 +101,13 @@ function UserProfile(props) {
 
 }
 
-function Post(props) {
-
-    const [state, setState] = React.useState({
-        editing: false,
-    })
+function Posts(props) {
 
     console.log(props.state.posts)
 
     function postUserview (event) {
         console.log(event.target.innerHTML)
         props.postUserview(event.target.innerHTML)
-    }
-
-    function editPost () {
-        console.log("click!")
     }
 
     if (!props.state.isLoaded) {
@@ -132,30 +124,100 @@ function Post(props) {
 
         console.log(props.state.posts)
         console.log(props.state.posts.length)
-        console.log(props.username)
         
         return (
             <div id="posts-section">
-                {props.state.postsType == 'all_posts' && props.state.pageNumber == 1 ? <PostForm postProps={props} /> : ""}
+                {props.state.postsType == 'all_posts' && props.state.pageNumber == 1 ? <PostForm postsProps={props} /> : ""}
                 {props.state.posts.map((post, i) =>
                     <div className={i == 0 && props.state.animate == true ? "card animate" : "card"} key={i}>
-                        <div className="card-title m-2">
-                            <button className="btn btn-link" onClick={postUserview}>{post.user}</button>
-                            <div className="card-subtitle m-2 text-muted">
-                                {post.body}
-                                <br />
-                                <small>{post.timestamp}</small>
-                                {post.user == props.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
-                                <br />
-                                <button className="btn like">&#9825;</button>
-                                <button className="btn btn-link commentBtn">Comments</button>
-                            </div>
-                        </div>
+                        <Post 
+                        postsProps={props} 
+                        post={post}
+                        postUserview={postUserview}
+                        i={i}
+                        />
                     </div>    
                 )}
-                <Paginator postProps={props} />
+                <Paginator postsProps={props} />
             </div>
         );
+    }
+}
+
+function Post(props) {
+
+    const post = props.post
+    const i = props.i
+
+    const [state, setState] = React.useState({
+        editing: false,
+        text: props.post.body,
+        edited: post.edited,
+    })
+
+    function editPost () {
+        setState({
+            ...state,
+            editing: true,
+        })
+    }
+
+    function updateText(event) {
+        setState({
+            ...state,
+            text: event.target.value
+        })
+    }
+
+    function updatePost (event) {
+
+        fetch('/edit_post/' + post.id, {
+            method: 'PUT',
+            body: JSON.stringify({
+                body: state.text,
+                edited: true,
+            }),
+        })
+        .then(response => {
+
+            //Reload the posts
+            props.postsProps.setState({
+                ...props.postsProps.state,
+                isLoaded: false,
+            })
+
+            props.postsProps.loadPosts()
+        })
+        event.preventDefault()
+        console.log(state.edited)
+        return false
+    }
+
+    if (state.editing) {
+        return (
+            <div className="card-title m-2">
+                <button className="btn btn-link" onClick={props.postUserview}>{post.user}</button>
+                <form>
+                    <textarea class="form-control m-1" onChange={updateText}>{post.body}</textarea>
+                    <input type="submit" class="btn btn-primary m-1" onClick={updatePost} value="Save Changes" />
+                </form>
+            </div>
+        )
+    } else {
+        return (
+                <div className="card-title m-2">
+                                <button className="btn btn-link" onClick={props.postUserview}>{post.user}</button>
+                                <div className="card-subtitle m-2 text-muted">
+                                    {post.body}
+                                    <br />
+                                    <small>{post.timestamp} {state.edited ? "[Edited]" : ""}</small>
+                                    {post.user == props.postsProps.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
+                                    <br />
+                                    <button className="btn like">&#9825;</button>
+                                    <button className="btn btn-link commentBtn">Comments</button>
+                                </div>
+                </div>
+        )
     }
 }
 
@@ -185,14 +247,14 @@ function PostForm(props) {
         .then(response => {
 
             //Reload the posts
-            props.postProps.setState({
-                ...props.postProps.state,
+            props.postsProps.setState({
+                ...props.postsProps.state,
                 isLoaded: false,
                 //animate addition of the new post
                 animate: true,
             })
 
-            props.postProps.loadPosts()
+            props.postsProps.loadPosts()
         })
 
     }
@@ -216,44 +278,44 @@ function Paginator(props) {
 
     function buttons () {
 
-        for (let i=1; i <= props.postProps.state.upperPageLimit; i++) {
+        for (let i=1; i <= props.postsProps.state.upperPageLimit; i++) {
             listButtons.push({i})
         }
         console.log(listButtons)
-        console.log(props.postProps.state.pageNumber)
+        console.log(props.postsProps.state.pageNumber)
 
     }
 
     //Based on the length of the array add the same amount of buttons
     let buttonsTemplate = listButtons.map((button, i) =>
-        <li className={props.postProps.state.pageNumber == i+1 ? "page-item active" : "page-item"}><button data-position={i+1} className="page-link" onClick={paginatorNumber}>{i+1}</button></li>
+        <li className={props.postsProps.state.pageNumber == i+1 ? "page-item active" : "page-item"}><button data-position={i+1} className="page-link" onClick={paginatorNumber}>{i+1}</button></li>
     )
 
     //Navigate between pages
     function paginatorNext() {
-        props.postProps.changePageNumber(props.postProps.state.pageNumber + 1)
+        props.postsProps.changePageNumber(props.postsProps.state.pageNumber + 1)
     }
 
     function paginatorPrevious() {
-        props.postProps.changePageNumber(props.postProps.state.pageNumber - 1)
+        props.postsProps.changePageNumber(props.postsProps.state.pageNumber - 1)
     }
 
     function paginatorNumber(event) {
         console.log('click!')
         //use dataset as the value for a pageNumber
         console.log(event.target.dataset.position)
-        props.postProps.changePageNumber(event.target.dataset.position)
+        props.postsProps.changePageNumber(event.target.dataset.position)
     }
 
     //Check if there is only one page
-    if (props.postProps.state.upperPageLimit !==1) {
+    if (props.postsProps.state.upperPageLimit !==1) {
         return (
             <div>
                 <nav>
                     <ul className="pagination">
-                        {props.postProps.state.pageNumber > 1 ? <li className="page-item"><button onClick={paginatorPrevious} className="page-link">&laquo; previous</button></li>  : "" }
+                        {props.postsProps.state.pageNumber > 1 ? <li className="page-item"><button onClick={paginatorPrevious} className="page-link">&laquo; previous</button></li>  : "" }
                         {buttonsTemplate}
-                        {props.postProps.state.pageNumber < props.postProps.state.upperPageLimit ? <li className="page-item"><button onClick={paginatorNext} className="page-link">next &raquo;</button></li> : "" }
+                        {props.postsProps.state.pageNumber < props.postsProps.state.upperPageLimit ? <li className="page-item"><button onClick={paginatorNext} className="page-link">next &raquo;</button></li> : "" }
                     </ul>
                 </nav>
             </div>
@@ -321,6 +383,7 @@ function App() {
         setState({
             ...state,
             postsType: "following",
+            animate: false,
             isLoaded: false,
         })
         loadPosts();
@@ -334,6 +397,7 @@ function App() {
         setState({
             ...state,
             postsType: `${userview.innerHTML}`,
+            animate: false,
             isLoaded: false,
         })
         loadPosts();
@@ -365,7 +429,7 @@ function App() {
                     state={state}
                     username={userview} 
                 />
-                <Post 
+                <Posts 
                     state={state}
                     setState={setState}
                     username={userview}

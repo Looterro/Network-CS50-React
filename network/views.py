@@ -124,9 +124,11 @@ def edit_post(request, post_id):
         return JsonResponse({"error": "Please specify the new message"}, status=400)
 
     new_body = data.get("body")
+    edited = data.get("edited")
 
     post_to_update = Post.objects.get(user=request.user, id = post_id)
     post_to_update.body = new_body
+    post_to_update.edited = edited
 
     post_to_update.save()
     return HttpResponse(status=204)

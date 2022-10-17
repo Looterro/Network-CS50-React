@@ -17,6 +17,7 @@ class Post(models.Model):
     body = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField("User", blank=True, related_name="likes")
+    edited = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Post ({self.user.username}) #{self.id}"
@@ -27,7 +28,8 @@ class Post(models.Model):
             "user": self.user.username,
             "body": self.body,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-            "likes": [user.username for user in self.likes.all()]
+            "likes": [user.username for user in self.likes.all()],
+            "edited": self.edited,
         }
 
     class Meta:
