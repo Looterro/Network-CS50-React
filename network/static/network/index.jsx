@@ -308,6 +308,7 @@ function Comments(props) {
                     ...state,
                     comments: comments,
                     isLoaded: true,
+                    text: ""
                 })
             })
 
@@ -338,11 +339,18 @@ function Comments(props) {
             setState({
                 ...state,
                 isLoaded: false,
+                text: ""
             })
             loadComments()
         })
         return false
     }
+    
+    // const divRef = useRef(null);
+              
+    // useEffect(() => {
+    //   divRef.current.scrollIntoView({ behavior: 'smooth' });
+    // });
 
     return (
         <div>
@@ -359,11 +367,12 @@ function Comments(props) {
                                 </div>
                             </div>
                         )}
+                         {/* <div ref={divRef} /> */}
                     </div>
                     <hr />
                     <div>
                         <form>
-                            <textarea onChange={updateText} class="form-control m-1" placeholder="Write your comment here"></textarea>
+                            <textarea onChange={updateText} class="form-control m-1" value={state.text} placeholder="Write your comment here"></textarea>
                             <input data-id={post.id} type="submit" onClick={submitComment} class="btn btn-primary btn-sm m-1" value="Comment" />
                         </form>
                     </div>
