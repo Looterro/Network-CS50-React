@@ -356,7 +356,7 @@ function Comments(props) {
 
         event.preventDefault()
 
-        const csrf_token = props.postProps.getCookie('csrftoken');
+        const csrf_token = props.postProps.postsProps.getCookie('csrftoken');
         fetch('/comments_compose/' + event.target.dataset.id, {
             method: 'POST',
             body: JSON.stringify({
