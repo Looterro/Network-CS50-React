@@ -184,6 +184,7 @@ function Post(props) {
         })
     }
 
+
     function updatePost (event) {
 
         const csrf_token = props.postsProps.getCookie('csrftoken');
@@ -205,7 +206,6 @@ function Post(props) {
                 ...props.postsProps.state,
                 isLoaded: false,
             })
-
             props.postsProps.loadPosts()
         })
         event.preventDefault()
@@ -377,18 +377,22 @@ function Comments(props) {
         })
         return false
     }
-    
-    // const divRef = useRef(null);
-              
-    // useEffect(() => {
-    //   divRef.current.scrollIntoView({ behavior: 'smooth' });
-    // });
+
+    //Scroll to the bottom of comments(the newest)
+    const divRef = React.useRef(null);
+
+    React.useEffect(() => {
+      divRef.current.scrollIntoView({ behavior: 'smooth', alignToTop: 'false', block: 'nearest' });
+    });
+        
+
 
     return (
         <div>
             <hr />
                 <div className="comment_div">
                     <div className="comments_div">
+
                         {state.comments.map((comment, i) =>
                             <div className="comment">
                                 <button className="btn btn-link userview-link-comments" onClick={props.postProps.postUserview}>{comment.user}</button>
@@ -399,7 +403,7 @@ function Comments(props) {
                                 </div>
                             </div>
                         )}
-                         {/* <div ref={divRef} /> */}
+                        <div ref={divRef} />
                     </div>
                     <hr />
                     <div>
