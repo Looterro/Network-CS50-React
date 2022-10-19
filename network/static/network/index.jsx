@@ -18,11 +18,16 @@ function UserProfile(props) {
     function followUser() {
         console.log(state)
 
+        const csrf_token = props.getCookie('csrftoken');
         fetch('follow', {
             method: 'PUT',
             body: JSON.stringify({
                 username: props.state.postsType
             }),
+            credentials: 'same-origin',
+            headers: {
+                "X-CSRFToken": csrf_token
+            }
         })
         .then(response => response.json())
         .then(data => {
@@ -60,11 +65,16 @@ function UserProfile(props) {
 
                 //Fetch information whether a given user is followed by request user or not
 
+                const csrf_token = props.getCookie('csrftoken');
                 fetch('/follow_status', {
                     method: 'PUT',
                     body: JSON.stringify({
                         username: props.state.postsType
-                    })
+                    }),
+                    credentials: 'same-origin',
+                    headers: {
+                        "X-CSRFToken": csrf_token
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -176,12 +186,17 @@ function Post(props) {
 
     function updatePost (event) {
 
+        const csrf_token = props.postsProps.getCookie('csrftoken');
         fetch('/edit_post/' + post.id, {
             method: 'PUT',
             body: JSON.stringify({
                 body: state.text,
                 edited: true,
             }),
+            credentials: 'same-origin',
+            headers: {
+                "X-CSRFToken": csrf_token
+            }
         })
         .then(response => {
 
@@ -201,11 +216,16 @@ function Post(props) {
     //Check for request user likes 
     React.useEffect(() => {
 
+        const csrf_token = props.postsProps.getCookie('csrftoken');
         fetch('/like_status', {
             method: 'PUT',
             body: JSON.stringify({
                 id: post.id
-            })
+            }),
+            credentials: 'same-origin',
+            headers: {
+                "X-CSRFToken": csrf_token
+            }
         })
         .then(response => response.json())
         .then(data => {
@@ -223,12 +243,16 @@ function Post(props) {
     //Functions for liking a post
     function likePost() {
 
-        
+        const csrf_token = props.postsProps.getCookie('csrftoken');
         fetch('like', {
             method: 'PUT',
             body: JSON.stringify({
                 id: post.id
             }),
+            credentials: 'same-origin',
+            headers: {
+                "X-CSRFToken": csrf_token
+            }
         })
         .then(response => response.json())
         .then(data => {
@@ -326,14 +350,22 @@ function Comments(props) {
         })
     }
 
+    
     //function for posting a comment with a fetch
     function submitComment (event) {
+
         event.preventDefault()
+
+        const csrf_token = props.postProps.getCookie('csrftoken');
         fetch('/comments_compose/' + event.target.dataset.id, {
             method: 'POST',
             body: JSON.stringify({
                 body: state.text,
             }),
+            credentials: 'same-origin',
+            headers: {
+                "X-CSRFToken": csrf_token
+            }
         })
         .then(response => {
             setState({
@@ -398,11 +430,17 @@ function PostForm(props) {
 
         //Prevent reloading the page
         event.preventDefault()
+
+        const csrf_token = props.postsProps.getCookie('csrftoken');
         fetch('/posting_compose', {
             method: 'POST',
             body: JSON.stringify({
                 body: state.text,
             }),
+            credentials: 'same-origin',
+            headers: {
+                "X-CSRFToken": csrf_token
+            }
         })
         .then(response => {
 
@@ -501,6 +539,23 @@ function App() {
         animate: false,
     })
 
+    //Getting csrf cookie to safely submit the data through PUT and POST fetch
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     function loadPosts () {
 
         //Load the posts only if they are not loaded already to prevent the loop
@@ -587,7 +642,8 @@ function App() {
                 />
                 <UserProfile
                     state={state}
-                    username={userview} 
+                    username={userview}
+                    getCookie={getCookie} 
                 />
                 <Posts 
                     state={state}
@@ -596,6 +652,7 @@ function App() {
                     changePageNumber={changePageNumber}
                     postUserview={postUserview}
                     loadPosts={loadPosts}
+                    getCookie={getCookie}
                 />
             </div>
 
