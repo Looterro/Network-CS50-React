@@ -6,7 +6,7 @@ Full specification, API description and setup: https://cs50.harvard.edu/web/2020
 
 ## Video Demo
 ```bash
-https://youtu.be/I7qATqDsBHI
+(https://youtu.be/I7qATqDsBHI)
 ```
 
 ## Setup
