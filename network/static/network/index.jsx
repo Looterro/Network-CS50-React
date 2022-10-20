@@ -184,7 +184,6 @@ function Post(props) {
         })
     }
 
-
     function updatePost (event) {
 
         const csrf_token = props.postsProps.getCookie('csrftoken');
@@ -201,12 +200,13 @@ function Post(props) {
         })
         .then(response => {
 
-            //Reload the posts
-            props.postsProps.setState({
-                ...props.postsProps.state,
-                isLoaded: false,
+            //Change the state of text inside the post without reloading the page and changing post position
+            setState({
+                ...state,
+                text: state.text,
+                editing: false,
             })
-            props.postsProps.loadPosts()
+
         })
         event.preventDefault()
         console.log(state.edited)
@@ -238,7 +238,6 @@ function Post(props) {
             })
         })
     }, [])
-
 
     //Functions for liking a post
     function likePost() {
@@ -283,7 +282,7 @@ function Post(props) {
             <div className="card-title m-2">
                 <button className="btn btn-link user" onClick={props.postUserview}>{post.user}</button>
                 <form>
-                    <textarea className="form-control m-1" onChange={updateText}>{post.body}</textarea>
+                    <textarea className="form-control m-1" onChange={updateText}>{post.edited ? state.text : post.body}</textarea>
                     <input type="submit" className="btn btn-sm btn-primary m-1" onClick={updatePost} value="Save Changes" />
                     <button onClick={discardChanges} className="btn btn-sm btn-danger m-1">Discard Changes</button>
                 </form>
@@ -294,7 +293,7 @@ function Post(props) {
                 <div className="card-title m-2">
                     <button className="btn btn-link user" onClick={props.postUserview}>{post.user}</button>
                     <div className="card-subtitle m-2 text-muted">
-                        {post.body}
+                        {post.edited ? state.text : post.body}
                         <br />
                         <small>{post.timestamp} {state.edited ? "[Edited]" : ""}</small>
                         {post.user == props.postsProps.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
