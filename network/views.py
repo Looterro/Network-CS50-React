@@ -5,7 +5,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import json
 from django.core.paginator import Paginator
 

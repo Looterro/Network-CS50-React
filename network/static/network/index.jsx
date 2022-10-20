@@ -9,11 +9,9 @@ function Title(props) {
 
 function UserProfile(props) {
     
-    const [state, setState] = React.useState({
-        followedCount: 0,
-        followingCount: 0,
-        followed: false,
-    })
+    const [followedCount, setFollowedCount] = React.useState(0)
+    const [followingCount, setFollowingCount] = React.useState(0)
+    const [followed, setFollowed] = React.useState(false)
 
     function followUser() {
         console.log(state)
@@ -35,11 +33,8 @@ function UserProfile(props) {
             const followedstate = data['followed']
             const followedUpdatedCount = data['followers']
 
-            setState({
-                ...state,
-                followed: followedstate,
-                followedCount: followedUpdatedCount,
-            })
+            setFollowed(followedstate)
+            setFollowedCount(followedUpdatedCount);
         })
     }
 
@@ -57,11 +52,8 @@ function UserProfile(props) {
                 console.log(user)
                 console.log(user.followers)
 
-                setState({
-                    ...state,
-                    followedCount: user.followers.length,
-                    followingCount: user.following.length,
-                })
+                setFollowedCount(user.followers.length);
+                setFollowingCount(user.following.length);
 
                 //Fetch information whether a given user is followed by request user or not
 
@@ -81,26 +73,18 @@ function UserProfile(props) {
 
                     let followed = data['followed']
                     console.log(followed)
-                    setState({
-                        ...state,
-                        followed: followed,
-                    })
+                    setFollowed(followed)
                 })
 
             })
 
-            
 
         }
 
-        console.log(props.state.postsType != 'all_posts' && props.state.postsType != 'following');
-        console.log(props.username.innerHTML)
-        console.log(state.followed)
-
         return (
             <div className="userview">
-                <div> Followers: {state.followedCount} | Following: {state.followingCount} </div>
-                {props.username.innerHTML == props.state.postsType ? "" : <button onClick={followUser} className="btn btn-sm btn-secondary"> {state.followed ? "Unfollow" : "Follow"} </button>}
+                <div> Followers: {followedCount} | Following: {followingCount} </div>
+                {props.username.innerHTML == props.state.postsType ? "" : <button onClick={followUser} className="btn btn-sm btn-secondary"> {followed ? "Unfollow" : "Follow"} </button>}
             </div>
         )
     }
@@ -205,6 +189,7 @@ function Post(props) {
                 ...state,
                 text: state.text,
                 editing: false,
+                edited: true,
             })
 
         })
@@ -282,7 +267,7 @@ function Post(props) {
             <div className="card-title m-2">
                 <button className="btn btn-link user" onClick={props.postUserview}>{post.user}</button>
                 <form>
-                    <textarea className="form-control m-1" onChange={updateText}>{post.edited ? state.text : post.body}</textarea>
+                    <textarea className="form-control m-1" onChange={updateText}>{state.edited ? state.text : post.body}</textarea>
                     <input type="submit" className="btn btn-sm btn-primary m-1" onClick={updatePost} value="Save Changes" />
                     <button onClick={discardChanges} className="btn btn-sm btn-danger m-1">Discard Changes</button>
                 </form>
@@ -293,13 +278,13 @@ function Post(props) {
                 <div className="card-title m-2">
                     <button className="btn btn-link user" onClick={props.postUserview}>{post.user}</button>
                     <div className="card-subtitle m-2 text-muted">
-                        {post.edited ? state.text : post.body}
+                        {state.edited ? state.text : post.body}
                         <br />
                         <small>{post.timestamp} {state.edited ? "[Edited]" : ""}</small>
                         {post.user == props.postsProps.username.innerHTML ? <button onClick={editPost} className="btn sm btn-link edit">Edit</button> : ""}
                         <br />
                         <button onClick={likePost} className={state.liked ? "liked" : "unliked"}>{state.liked ? <div>&#9829;</div> : <div>&#9825;</div>}</button> {state.likesCount}
-                        <button onClick={toggleComments} className="btn btn-link commentBtn">Comments</button> {state.commentsCount}
+                        <button onClick={toggleComments} className="btn btn-link commentBtn">Comments</button>
                     </div>
                     {state.commentsSection ? <Comments postProps={props} /> : ""}
                 </div>
@@ -404,7 +389,6 @@ function Comments(props) {
                         )}
                         <div ref={divRef} />
                     </div>
-                    <hr />
                     <div>
                         <form>
                             <textarea onChange={updateText} class="form-control m-1" value={state.text} placeholder="Write your comment here"></textarea>
