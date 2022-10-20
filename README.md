@@ -10,11 +10,10 @@ https://youtu.be/I7qATqDsBHI
 
 ## Setup
 
-Clone this repository and change directory to mail:
+Clone this repository and change directory to network:
 
 ```bash
 git clone https://github.com/Looterro/Network-CS50-React.git
-cd network
 ```
 
 Install Django:
